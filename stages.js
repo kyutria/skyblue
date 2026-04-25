@@ -155,7 +155,7 @@ const STAGES = {
   },
   3: {
     1: {
-      story: "나는 하늘색을 좋아한다. 전부 가려주는 이 짙은 어둠 속에서는 남들의 시선을 피해 숨을 수 있고, 아무것도 애써 보지 않아도 된다.",
+      story: "나는 하늘색이 좋다고 말했다. 전부 가려주는 이 짙은 어둠 속에서는 남들의 시선을 피해 숨을 수 있고, 아무것도 애써 보지 않아도 되서 그렇다고 했다.",
       storyImage: "assets/images/story/3-1-story.png",
       puzzleImage: "assets/images/puzzle/3-1-puzzle.png"
     },
