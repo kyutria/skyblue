@@ -31,6 +31,26 @@
   bgm.src = `assets/audio/bgm-${part}.mp3`;
   bgm.volume = 0.5;
 
+  // 타이핑 효과음 (Web Audio API)
+  let audioCtx = null;
+
+  function playTypingClick() {
+    try {
+      if (!audioCtx) audioCtx = new (window.AudioContext || window.webkitAudioContext)();
+      const osc = audioCtx.createOscillator();
+      const gain = audioCtx.createGain();
+      osc.connect(gain);
+      gain.connect(audioCtx.destination);
+      osc.type = 'sine';
+      osc.frequency.setValueAtTime(1100, audioCtx.currentTime);
+      osc.frequency.exponentialRampToValueAtTime(700, audioCtx.currentTime + 0.04);
+      gain.gain.setValueAtTime(0.06, audioCtx.currentTime);
+      gain.gain.exponentialRampToValueAtTime(0.001, audioCtx.currentTime + 0.07);
+      osc.start(audioCtx.currentTime);
+      osc.stop(audioCtx.currentTime + 0.07);
+    } catch (e) {}
+  }
+
   storyPhase.classList.add('active');
   typeSentence(sentences[0]);
 
@@ -41,7 +61,9 @@
     let i = 0;
 
     typeTimer = setInterval(() => {
-      textEl.textContent += text[i++];
+      const ch = text[i++];
+      textEl.textContent += ch;
+      if (ch.trim()) playTypingClick();
       if (i >= text.length) {
         clearInterval(typeTimer);
         typeTimer = null;
