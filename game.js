@@ -31,23 +31,37 @@
   bgm.src = `assets/audio/bgm-${part}.mp3`;
   bgm.volume = 0.5;
 
-  // 타이핑 효과음 (Web Audio API)
+  // 타이핑 효과음 (Web Audio API - 노이즈 기반 키보드 클릭)
   let audioCtx = null;
+  let typingBuffer = null;
+
+  function initTypingSound() {
+    audioCtx = new (window.AudioContext || window.webkitAudioContext)();
+    const sampleRate = audioCtx.sampleRate;
+    const bufferSize = Math.floor(sampleRate * 0.045);
+    typingBuffer = audioCtx.createBuffer(1, bufferSize, sampleRate);
+    const data = typingBuffer.getChannelData(0);
+    for (let i = 0; i < bufferSize; i++) {
+      const t = i / sampleRate;
+      data[i] = (Math.random() * 2 - 1) * Math.exp(-t / 0.006);
+    }
+  }
 
   function playTypingClick() {
     try {
-      if (!audioCtx) audioCtx = new (window.AudioContext || window.webkitAudioContext)();
-      const osc = audioCtx.createOscillator();
+      if (!audioCtx) initTypingSound();
+      const source = audioCtx.createBufferSource();
+      source.buffer = typingBuffer;
+      const filter = audioCtx.createBiquadFilter();
+      filter.type = 'bandpass';
+      filter.frequency.value = 2800;
+      filter.Q.value = 1.2;
       const gain = audioCtx.createGain();
-      osc.connect(gain);
+      gain.gain.setValueAtTime(0.35, audioCtx.currentTime);
+      source.connect(filter);
+      filter.connect(gain);
       gain.connect(audioCtx.destination);
-      osc.type = 'sine';
-      osc.frequency.setValueAtTime(1100, audioCtx.currentTime);
-      osc.frequency.exponentialRampToValueAtTime(700, audioCtx.currentTime + 0.04);
-      gain.gain.setValueAtTime(0.06, audioCtx.currentTime);
-      gain.gain.exponentialRampToValueAtTime(0.001, audioCtx.currentTime + 0.07);
-      osc.start(audioCtx.currentTime);
-      osc.stop(audioCtx.currentTime + 0.07);
+      source.start(audioCtx.currentTime);
     } catch (e) {}
   }
 
