@@ -1,0 +1,236 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+  <meta charset="UTF-8">
+  <title>스도쿠 퍼즐 테스트</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link href="https://fonts.googleapis.com/css2?family=Gowun+Batang:wght@400;700&display=swap" rel="stylesheet">
+  <style>
+    * { margin: 0; padding: 0; box-sizing: border-box; }
+
+    html, body {
+      width: 1200px;
+      height: 675px;
+      overflow: hidden;
+    }
+
+    #puzzle {
+      width: 1200px;
+      height: 675px;
+      background-color: #F3EDE0;
+      background-image:
+        radial-gradient(ellipse at 8% 8%, rgba(168, 197, 216, 0.18) 0%, transparent 45%),
+        radial-gradient(ellipse at 92% 92%, rgba(168, 197, 216, 0.12) 0%, transparent 40%);
+      position: relative;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      font-family: 'Gowun Batang', serif;
+    }
+
+    /* 외곽 얇은 테두리 */
+    .frame {
+      position: absolute;
+      inset: 14px;
+      border: 1.5px solid rgba(130, 165, 195, 0.45);
+      pointer-events: none;
+    }
+
+    /* 코너 장식 SVG */
+    .deco {
+      position: absolute;
+      pointer-events: none;
+    }
+    .deco.tl { top: 0; left: 0; }
+    .deco.bl { bottom: 0; left: 0; transform: scaleY(-1); }
+
+    /* 타이틀 */
+    .title {
+      font-size: 26px;
+      color: #5A7A9A;
+      letter-spacing: 0.14em;
+      margin-bottom: 24px;
+      display: flex;
+      align-items: center;
+      gap: 20px;
+      position: relative;
+      z-index: 1;
+    }
+    .title-line {
+      width: 72px;
+      height: 1px;
+      background: #8BA7C7;
+    }
+
+    /* 스도쿠 그리드 */
+    #grid {
+      position: relative;
+      z-index: 1;
+      border: 2.5px solid #6A8FAD;
+    }
+    .row { display: flex; }
+
+    .cell {
+      width: 46px;
+      height: 46px;
+      border-right: 1px solid #B8CEDC;
+      border-bottom: 1px solid #B8CEDC;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 20px;
+      font-family: 'Gowun Batang', serif;
+      background: #FAF7F2;
+      cursor: pointer;
+      transition: background 0.12s;
+      user-select: none;
+    }
+    .cell:last-child { border-right: none; }
+    .row:last-child .cell { border-bottom: none; }
+
+    .cell.br { border-right: 2.5px solid #6A8FAD; }
+    .cell.bb { border-bottom: 2.5px solid #6A8FAD; }
+
+    .cell.prefilled {
+      color: #2E4F6E;
+      font-weight: 700;
+      background: #EDE8DE;
+      cursor: default;
+    }
+    .cell.selected { background: #C6DFF0; }
+    .cell.user-input { color: #7A5230; }
+
+    /* 정답형식 배지 */
+    .badge {
+      position: absolute;
+      bottom: 26px;
+      right: 38px;
+      border: 1.5px solid #8BA7C7;
+      border-radius: 7px;
+      padding: 7px 22px;
+      font-size: 14px;
+      color: #5A7A9A;
+      background: rgba(243, 237, 224, 0.92);
+      z-index: 1;
+      letter-spacing: 0.05em;
+    }
+  </style>
+</head>
+<body>
+<div id="puzzle">
+  <div class="frame"></div>
+
+  <!-- 좌상단 장식 -->
+  <svg class="deco tl" width="210" height="210" viewBox="0 0 210 210">
+    <ellipse cx="28" cy="90" rx="20" ry="8" fill="#A8C5D8" opacity="0.38" transform="rotate(-38 28 90)"/>
+    <ellipse cx="52" cy="62" rx="24" ry="9" fill="#8FBAD0" opacity="0.33" transform="rotate(-58 52 62)"/>
+    <ellipse cx="82" cy="38" rx="20" ry="8" fill="#B0CFDF" opacity="0.38" transform="rotate(-74 82 38)"/>
+    <ellipse cx="38" cy="118" rx="22" ry="8" fill="#9DC3D5" opacity="0.28" transform="rotate(-18 38 118)"/>
+    <ellipse cx="118" cy="36" rx="18" ry="7" fill="#A8C5D8" opacity="0.33" transform="rotate(-80 118 36)"/>
+    <path d="M 18 150 Q 42 105 65 65" stroke="#9ABCCC" stroke-width="1.5" fill="none" opacity="0.38"/>
+    <path d="M 8 65 Q 36 53 65 65" stroke="#9ABCCC" stroke-width="1.5" fill="none" opacity="0.32"/>
+    <!-- 큰 꽃 -->
+    <circle cx="65" cy="65" r="13" fill="#C8DCE8" opacity="0.48"/>
+    <circle cx="65" cy="51" r="9" fill="#D8ECF5" opacity="0.44"/>
+    <circle cx="79" cy="65" r="9" fill="#D0E6F0" opacity="0.44"/>
+    <circle cx="65" cy="79" r="9" fill="#C8DCE8" opacity="0.44"/>
+    <circle cx="51" cy="65" r="9" fill="#D0E6F0" opacity="0.44"/>
+    <circle cx="65" cy="65" r="6" fill="#EBF4FA" opacity="0.62"/>
+    <!-- 작은 꽃 -->
+    <circle cx="108" cy="28" r="8" fill="#C8DCE8" opacity="0.38"/>
+    <circle cx="108" cy="20" r="6" fill="#D8ECF5" opacity="0.38"/>
+    <circle cx="116" cy="28" r="6" fill="#D0E6F0" opacity="0.38"/>
+    <circle cx="108" cy="36" r="6" fill="#C8DCE8" opacity="0.38"/>
+    <circle cx="100" cy="28" r="6" fill="#D0E6F0" opacity="0.38"/>
+    <circle cx="108" cy="28" r="4" fill="#EBF4FA" opacity="0.55"/>
+    <circle cx="22" cy="32" r="8" fill="#B8D0E0" opacity="0.32"/>
+    <circle cx="22" cy="24" r="6" fill="#C8DCE8" opacity="0.3"/>
+    <circle cx="30" cy="32" r="6" fill="#BDD4E4" opacity="0.3"/>
+    <circle cx="22" cy="40" r="6" fill="#B8D0E0" opacity="0.3"/>
+    <circle cx="14" cy="32" r="6" fill="#BDD4E4" opacity="0.3"/>
+  </svg>
+
+  <!-- 좌하단 장식 -->
+  <svg class="deco bl" width="180" height="150" viewBox="0 0 180 150">
+    <ellipse cx="22" cy="90" rx="18" ry="7" fill="#A8C5D8" opacity="0.32" transform="rotate(32 22 90)"/>
+    <ellipse cx="48" cy="68" rx="22" ry="8" fill="#8FBAD0" opacity="0.28" transform="rotate(52 48 68)"/>
+    <ellipse cx="72" cy="50" rx="18" ry="7" fill="#B0CFDF" opacity="0.32" transform="rotate(66 72 50)"/>
+    <circle cx="55" cy="58" r="11" fill="#C8DCE8" opacity="0.38"/>
+    <circle cx="55" cy="47" r="8" fill="#D8ECF5" opacity="0.36"/>
+    <circle cx="66" cy="58" r="8" fill="#D0E6F0" opacity="0.36"/>
+    <circle cx="55" cy="69" r="8" fill="#C8DCE8" opacity="0.36"/>
+    <circle cx="44" cy="58" r="8" fill="#D0E6F0" opacity="0.36"/>
+    <circle cx="55" cy="58" r="5" fill="#EBF4FA" opacity="0.52"/>
+  </svg>
+
+  <div class="title">
+    <div class="title-line"></div>
+    스도쿠
+    <div class="title-line"></div>
+  </div>
+
+  <div id="grid"></div>
+
+  <div class="badge">정답형식 : ?</div>
+</div>
+
+<script>
+  const puzzle = [
+    [5,3,0,0,7,0,0,0,0],
+    [6,0,0,1,9,5,0,0,0],
+    [0,9,8,0,0,0,0,6,0],
+    [8,0,0,0,6,0,0,0,3],
+    [4,0,0,8,0,3,0,0,1],
+    [7,0,0,0,2,0,0,0,6],
+    [0,6,0,0,0,0,2,8,0],
+    [0,0,0,4,1,9,0,0,5],
+    [0,0,0,0,8,0,0,7,9],
+  ];
+
+  const gridEl = document.getElementById('grid');
+  let selected = null;
+
+  for (let r = 0; r < 9; r++) {
+    const rowEl = document.createElement('div');
+    rowEl.className = 'row';
+
+    for (let c = 0; c < 9; c++) {
+      const cell = document.createElement('div');
+      cell.className = 'cell';
+      if (c === 2 || c === 5) cell.classList.add('br');
+      if (r === 2 || r === 5) cell.classList.add('bb');
+
+      if (puzzle[r][c] !== 0) {
+        cell.textContent = puzzle[r][c];
+        cell.classList.add('prefilled');
+      } else {
+        cell.addEventListener('click', e => {
+          e.stopPropagation();
+          if (selected) selected.classList.remove('selected');
+          selected = cell;
+          cell.classList.add('selected');
+        });
+      }
+      rowEl.appendChild(cell);
+    }
+    gridEl.appendChild(rowEl);
+  }
+
+  document.addEventListener('click', () => {
+    if (selected) { selected.classList.remove('selected'); selected = null; }
+  });
+
+  document.addEventListener('keydown', e => {
+    if (!selected) return;
+    if (e.key >= '1' && e.key <= '9') {
+      selected.textContent = e.key;
+      selected.classList.add('user-input');
+    } else if (e.key === 'Backspace' || e.key === 'Delete') {
+      selected.textContent = '';
+      selected.classList.remove('user-input');
+    }
+  });
+</script>
+</body>
+</html>
