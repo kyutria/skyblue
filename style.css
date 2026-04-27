@@ -94,3 +94,103 @@ body[data-part="3"] { background: #0a0a1e; }
   object-fit: cover;
   display: block;
 }
+
+#draw-canvas {
+  position: absolute;
+  inset: 0;
+  cursor: crosshair;
+  touch-action: none;
+}
+
+#draw-toolbar {
+  position: absolute;
+  bottom: 20px;
+  left: 50%;
+  transform: translateX(-50%);
+  background: rgba(20, 20, 20, 0.85);
+  border-radius: 12px;
+  padding: 10px 14px;
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+  backdrop-filter: blur(6px);
+  user-select: none;
+}
+
+.draw-row {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+}
+
+.draw-tool-btn {
+  background: rgba(255, 255, 255, 0.12);
+  border: 1px solid rgba(255, 255, 255, 0.2);
+  border-radius: 6px;
+  color: #fff;
+  padding: 5px 13px;
+  cursor: pointer;
+  font-size: 13px;
+  font-family: 'Gowun Batang', serif;
+  transition: background 0.15s;
+  white-space: nowrap;
+}
+
+.draw-tool-btn:hover,
+.draw-tool-btn.active {
+  background: rgba(255, 255, 255, 0.32);
+}
+
+.draw-sep {
+  width: 1px;
+  height: 22px;
+  background: rgba(255, 255, 255, 0.25);
+  margin: 0 2px;
+}
+
+.draw-size-btn {
+  width: 36px;
+  height: 32px;
+  background: rgba(255, 255, 255, 0.12);
+  border: 1px solid rgba(255, 255, 255, 0.2);
+  border-radius: 6px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  cursor: pointer;
+  transition: background 0.15s;
+}
+
+.draw-size-btn:hover,
+.draw-size-btn.active {
+  background: rgba(255, 255, 255, 0.32);
+}
+
+.draw-dot {
+  background: #fff;
+  border-radius: 50%;
+  display: block;
+}
+.draw-dot-xs { width: 4px;  height: 4px; }
+.draw-dot-s  { width: 8px;  height: 8px; }
+.draw-dot-m  { width: 14px; height: 14px; }
+.draw-dot-l  { width: 20px; height: 20px; }
+
+.draw-color-btn {
+  width: 26px;
+  height: 26px;
+  border-radius: 50%;
+  border: 2px solid rgba(255, 255, 255, 0.15);
+  cursor: pointer;
+  transition: transform 0.15s, box-shadow 0.15s;
+  flex-shrink: 0;
+}
+
+.draw-color-btn:hover {
+  transform: scale(1.15);
+}
+
+.draw-color-btn.active {
+  box-shadow: 0 0 0 2px #fff;
+  transform: scale(1.15);
+}

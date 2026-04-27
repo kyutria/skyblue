@@ -135,4 +135,123 @@
       advance();
     }
   });
+
+  // ── 그리기 모드 ────────────────────────────────────────────────────────────
+  const canvas = document.getElementById('draw-canvas');
+  const dctx = canvas.getContext('2d');
+  canvas.width = 1200;
+  canvas.height = 675;
+
+  let drawTool = 'pen';
+  let drawColor = '#1a1a1a';
+  let drawSize = 6;
+  let drawing = false;
+  let drawX = 0, drawY = 0;
+  const undoStack = [];
+
+  function saveDrawState() {
+    if (undoStack.length >= 20) undoStack.shift();
+    undoStack.push(dctx.getImageData(0, 0, canvas.width, canvas.height));
+  }
+
+  function getDrawPos(e) {
+    const rect = canvas.getBoundingClientRect();
+    return {
+      x: (e.clientX - rect.left) * (canvas.width / rect.width),
+      y: (e.clientY - rect.top) * (canvas.height / rect.height)
+    };
+  }
+
+  function applyToolStyle() {
+    if (drawTool === 'eraser') {
+      dctx.globalCompositeOperation = 'destination-out';
+      dctx.strokeStyle = 'rgba(0,0,0,1)';
+      dctx.fillStyle = 'rgba(0,0,0,1)';
+    } else {
+      dctx.globalCompositeOperation = 'source-over';
+      dctx.strokeStyle = drawColor;
+      dctx.fillStyle = drawColor;
+    }
+    dctx.lineWidth = drawSize;
+    dctx.lineCap = 'round';
+    dctx.lineJoin = 'round';
+  }
+
+  canvas.addEventListener('mousedown', e => {
+    e.preventDefault();
+    e.stopPropagation();
+    saveDrawState();
+    drawing = true;
+    const pos = getDrawPos(e);
+    drawX = pos.x;
+    drawY = pos.y;
+    applyToolStyle();
+    dctx.beginPath();
+    dctx.arc(pos.x, pos.y, drawSize / 2, 0, Math.PI * 2);
+    dctx.fill();
+    dctx.globalCompositeOperation = 'source-over';
+  });
+
+  canvas.addEventListener('mousemove', e => {
+    if (!drawing) return;
+    const pos = getDrawPos(e);
+    applyToolStyle();
+    dctx.beginPath();
+    dctx.moveTo(drawX, drawY);
+    dctx.lineTo(pos.x, pos.y);
+    dctx.stroke();
+    dctx.globalCompositeOperation = 'source-over';
+    drawX = pos.x;
+    drawY = pos.y;
+  });
+
+  canvas.addEventListener('mouseup', e => { e.stopPropagation(); drawing = false; });
+  canvas.addEventListener('mouseleave', () => { drawing = false; });
+  canvas.addEventListener('click', e => e.stopPropagation());
+
+  document.getElementById('draw-toolbar').addEventListener('click', e => e.stopPropagation());
+
+  const toolBtns = document.querySelectorAll('.draw-tool-btn');
+
+  document.getElementById('tool-pen').addEventListener('click', () => {
+    drawTool = 'pen';
+    toolBtns.forEach(b => b.classList.remove('active'));
+    document.getElementById('tool-pen').classList.add('active');
+  });
+
+  document.getElementById('tool-eraser').addEventListener('click', () => {
+    drawTool = 'eraser';
+    toolBtns.forEach(b => b.classList.remove('active'));
+    document.getElementById('tool-eraser').classList.add('active');
+  });
+
+  document.getElementById('draw-undo').addEventListener('click', () => {
+    if (undoStack.length) dctx.putImageData(undoStack.pop(), 0, 0);
+  });
+
+  document.getElementById('draw-clear').addEventListener('click', () => {
+    saveDrawState();
+    dctx.clearRect(0, 0, canvas.width, canvas.height);
+  });
+
+  document.querySelectorAll('.draw-size-btn').forEach(btn => {
+    btn.addEventListener('click', () => {
+      drawSize = parseInt(btn.dataset.size);
+      document.querySelectorAll('.draw-size-btn').forEach(b => b.classList.remove('active'));
+      btn.classList.add('active');
+    });
+  });
+
+  document.querySelectorAll('.draw-color-btn').forEach(btn => {
+    btn.addEventListener('click', () => {
+      drawColor = btn.dataset.color;
+      document.querySelectorAll('.draw-color-btn').forEach(b => b.classList.remove('active'));
+      btn.classList.add('active');
+      if (drawTool === 'eraser') {
+        drawTool = 'pen';
+        toolBtns.forEach(b => b.classList.remove('active'));
+        document.getElementById('tool-pen').classList.add('active');
+      }
+    });
+  });
 })();

@@ -18,6 +18,30 @@
     </div>
     <div id="puzzle-phase" class="phase">
       <img id="puzzle-image" src="" alt="">
+      <canvas id="draw-canvas"></canvas>
+      <div id="draw-toolbar">
+        <div class="draw-row">
+          <button id="tool-pen" class="draw-tool-btn active">펜</button>
+          <button id="tool-eraser" class="draw-tool-btn">지우개</button>
+          <button id="draw-undo" class="draw-tool-btn">↩</button>
+          <button id="draw-clear" class="draw-tool-btn">✕</button>
+          <div class="draw-sep"></div>
+          <button class="draw-size-btn" data-size="3"><span class="draw-dot draw-dot-xs"></span></button>
+          <button class="draw-size-btn active" data-size="6"><span class="draw-dot draw-dot-s"></span></button>
+          <button class="draw-size-btn" data-size="12"><span class="draw-dot draw-dot-m"></span></button>
+          <button class="draw-size-btn" data-size="20"><span class="draw-dot draw-dot-l"></span></button>
+        </div>
+        <div class="draw-row">
+          <button class="draw-color-btn active" data-color="#1a1a1a" style="background:#1a1a1a"></button>
+          <button class="draw-color-btn" data-color="#ffffff" style="background:#ffffff"></button>
+          <button class="draw-color-btn" data-color="#e63946" style="background:#e63946"></button>
+          <button class="draw-color-btn" data-color="#f4a261" style="background:#f4a261"></button>
+          <button class="draw-color-btn" data-color="#ffd166" style="background:#ffd166"></button>
+          <button class="draw-color-btn" data-color="#2dc653" style="background:#2dc653"></button>
+          <button class="draw-color-btn" data-color="#4361ee" style="background:#4361ee"></button>
+          <button class="draw-color-btn" data-color="#7209b7" style="background:#7209b7"></button>
+        </div>
+      </div>
     </div>
   </div>
   <audio id="bgm" loop></audio>
