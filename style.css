@@ -169,17 +169,30 @@ body[data-part="3"] { background: #0a0a1e; }
   border: 1px solid rgba(255, 255, 255, 0.2);
   border-radius: 6px;
   color: #fff;
-  padding: 5px 13px;
+  padding: 4px 8px;
   cursor: pointer;
-  font-size: 13px;
+  font-size: 15px;
   font-family: 'Gowun Batang', serif;
   transition: background 0.15s;
   white-space: nowrap;
+  line-height: 1;
 }
 
 .draw-tool-btn:hover,
 .draw-tool-btn.active {
   background: rgba(255, 255, 255, 0.32);
+}
+
+.draw-tool-text-btn {
+  font-size: 13px;
+  font-weight: bold;
+  font-family: serif;
+  padding: 4px 9px;
+}
+
+#draw-close {
+  font-size: 12px;
+  padding: 3px 8px;
 }
 
 .draw-sep {
