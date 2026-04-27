@@ -8,7 +8,9 @@ const STAGES = {
     2: {
       story: "너의 작은 손에는 언제나 뭉툭해진 몽당연필과 낡은 크레파스가 꼭 쥐어져 있었다. 어린 시절부터 유독 그림 그리기를 좋아했던 너는, 시선이 머무는 빈 공간마다 너만의 세상을 채워 넣으려 했다. 그때의 너에게 세상은 끝없이 펼쳐진 거대한 스케치북과 다름없었다.",
       storyImage: "assets/images/story/1-2-story.png",
-      puzzleImage: "assets/images/puzzle/1-2-puzzle.png"
+      puzzleImage: "assets/images/puzzle/1-2-puzzle.png",
+      puzzleType: "interactive",
+      puzzleScript: "puzzle-1-2.js"
     },
     3: {
       story: "그 수많은 색깔 중에서도 네가 가장 아끼던 것은 단연 하늘색 크레파스였다. 맑게 갠 하늘을 올려다볼 때면, 너는 그 눈부신 빛깔을 종이 위에 고스란히 옮겨 담고 싶어 했다. 그래서 늘 그 색만 가장 먼저 닳고 닳아 몽당연필처럼 짧아져 있곤 했다.",

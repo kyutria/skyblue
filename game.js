@@ -108,6 +108,11 @@
     state = 'puzzle';
     storyPhase.classList.remove('active');
     puzzlePhase.classList.add('active');
+    if (data.puzzleType === 'interactive' && data.puzzleScript) {
+      const s = document.createElement('script');
+      s.src = data.puzzleScript;
+      document.body.appendChild(s);
+    }
   }
 
   function advance() {
