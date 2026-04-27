@@ -15,7 +15,7 @@
   if (isEnding) {
     document.body.dataset.part = 'ending';
     puzzleImg.src = 'assets/images/puzzle/ending-puzzle.png';
-    bgm.src       = 'assets/audio/bgm-ending.mp3';
+    bgm.src       = 'assets/audio/bgm-5.mp3';
     bgm.volume    = 0.5;
     bgm.loop      = true;
     puzzlePhase.classList.add('active');
