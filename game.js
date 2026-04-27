@@ -209,7 +209,51 @@
   canvas.addEventListener('mouseleave', () => { drawing = false; });
   canvas.addEventListener('click', e => e.stopPropagation());
 
-  document.getElementById('draw-toolbar').addEventListener('click', e => e.stopPropagation());
+  const toolbar = document.getElementById('draw-toolbar');
+  const toggleBtn = document.getElementById('draw-toggle');
+
+  toolbar.addEventListener('click', e => e.stopPropagation());
+  toggleBtn.addEventListener('click', e => {
+    e.stopPropagation();
+    toolbar.style.display = 'flex';
+    toggleBtn.style.display = 'none';
+  });
+
+  document.getElementById('draw-close').addEventListener('click', () => {
+    toolbar.style.display = 'none';
+    toggleBtn.style.display = 'block';
+  });
+
+  // 드래그
+  const handle = document.getElementById('draw-handle');
+  let dragging = false;
+  let dragOX = 0, dragOY = 0;
+
+  handle.addEventListener('mousedown', e => {
+    e.preventDefault();
+    e.stopPropagation();
+    dragging = true;
+    const tRect = toolbar.getBoundingClientRect();
+    const gRect = document.getElementById('game').getBoundingClientRect();
+    toolbar.style.left = (tRect.left - gRect.left) + 'px';
+    toolbar.style.top  = (tRect.top  - gRect.top)  + 'px';
+    toolbar.style.bottom = 'auto';
+    toolbar.style.transform = 'none';
+    dragOX = e.clientX - tRect.left;
+    dragOY = e.clientY - tRect.top;
+  });
+
+  document.addEventListener('mousemove', e => {
+    if (!dragging) return;
+    const gRect = document.getElementById('game').getBoundingClientRect();
+    const tRect = toolbar.getBoundingClientRect();
+    const newLeft = Math.max(0, Math.min(e.clientX - gRect.left - dragOX, 1200 - tRect.width));
+    const newTop  = Math.max(0, Math.min(e.clientY - gRect.top  - dragOY, 675  - tRect.height));
+    toolbar.style.left = newLeft + 'px';
+    toolbar.style.top  = newTop  + 'px';
+  });
+
+  document.addEventListener('mouseup', () => { dragging = false; });
 
   const toolBtns = document.querySelectorAll('.draw-tool-btn');
 
