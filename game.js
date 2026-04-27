@@ -28,8 +28,17 @@
   storyImg.src = data.storyImage;
   puzzleImg.src = data.puzzleImage;
 
-  bgm.src = `assets/audio/bgm-${part}.mp3`;
+  function getBgmSrc(part, stage) {
+    if (part === 1) return 'assets/audio/bgm-1.mp3';
+    if (part === 2 && stage <= 4) return 'assets/audio/bgm-2.mp3';
+    if (part === 2) return 'assets/audio/bgm-3.mp3';
+    if (part === 3 && stage <= 8) return 'assets/audio/bgm-4.mp3';
+    return 'assets/audio/bgm-5.mp3';
+  }
+
+  bgm.src = getBgmSrc(part, stageNum);
   bgm.volume = 0.5;
+  bgm.loop = true;
 
   // 타이핑 효과음 (Web Audio API - 노이즈 기반 키보드 클릭)
   let audioCtx = null;
