@@ -24,6 +24,7 @@
         <div class="draw-row">
           <button id="tool-pen" class="draw-tool-btn active">펜</button>
           <button id="tool-eraser" class="draw-tool-btn">지우개</button>
+          <button id="tool-text" class="draw-tool-btn">텍스트</button>
           <button id="draw-undo" class="draw-tool-btn">↩</button>
           <button id="draw-clear" class="draw-tool-btn">✕</button>
           <div class="draw-sep"></div>
@@ -46,6 +47,9 @@
         </div>
       </div>
       <button id="draw-toggle">그리기</button>
+      <div id="draw-text-wrap">
+        <input id="draw-text-input" type="text" autocomplete="off" spellcheck="false">
+      </div>
     </div>
   </div>
   <audio id="bgm" loop></audio>

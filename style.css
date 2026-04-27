@@ -235,3 +235,21 @@ body[data-part="3"] { background: #0a0a1e; }
   box-shadow: 0 0 0 2px #fff;
   transform: scale(1.15);
 }
+
+#draw-text-wrap {
+  position: absolute;
+  display: none;
+  pointer-events: auto;
+}
+
+#draw-text-input {
+  background: transparent;
+  border: none;
+  border-bottom: 1px dashed rgba(255, 255, 255, 0.7);
+  outline: none;
+  font-family: 'Gowun Batang', serif;
+  min-width: 40px;
+  max-width: 800px;
+  padding: 2px 2px;
+  caret-color: currentColor;
+}

@@ -130,6 +130,7 @@
 
   document.addEventListener('click', advance);
   document.addEventListener('keydown', e => {
+    if (document.activeElement === document.getElementById('draw-text-input')) return;
     if (e.key === 'Enter' || e.key === ' ') {
       e.preventDefault();
       advance();
@@ -147,6 +148,8 @@
   let drawSize = 6;
   let drawing = false;
   let drawX = 0, drawY = 0;
+  let shiftStart = null, shiftSnap = null;
+  let textPos = null;
   const undoStack = [];
 
   function saveDrawState() {
@@ -178,36 +181,120 @@
   }
 
   canvas.addEventListener('mousedown', e => {
+    if (drawTool === 'text') return;
     e.preventDefault();
     e.stopPropagation();
-    saveDrawState();
     drawing = true;
     const pos = getDrawPos(e);
     drawX = pos.x;
     drawY = pos.y;
-    applyToolStyle();
-    dctx.beginPath();
-    dctx.arc(pos.x, pos.y, drawSize / 2, 0, Math.PI * 2);
-    dctx.fill();
-    dctx.globalCompositeOperation = 'source-over';
+    if (e.shiftKey) {
+      saveDrawState();
+      shiftStart = { x: pos.x, y: pos.y };
+      shiftSnap = dctx.getImageData(0, 0, canvas.width, canvas.height);
+    } else {
+      saveDrawState();
+      shiftStart = null;
+      shiftSnap = null;
+      applyToolStyle();
+      dctx.beginPath();
+      dctx.arc(pos.x, pos.y, drawSize / 2, 0, Math.PI * 2);
+      dctx.fill();
+      dctx.globalCompositeOperation = 'source-over';
+    }
   });
 
   canvas.addEventListener('mousemove', e => {
     if (!drawing) return;
     const pos = getDrawPos(e);
-    applyToolStyle();
-    dctx.beginPath();
-    dctx.moveTo(drawX, drawY);
-    dctx.lineTo(pos.x, pos.y);
-    dctx.stroke();
-    dctx.globalCompositeOperation = 'source-over';
-    drawX = pos.x;
-    drawY = pos.y;
+    if (shiftStart) {
+      dctx.putImageData(shiftSnap, 0, 0);
+      applyToolStyle();
+      dctx.beginPath();
+      dctx.moveTo(shiftStart.x, shiftStart.y);
+      dctx.lineTo(pos.x, pos.y);
+      dctx.stroke();
+      dctx.globalCompositeOperation = 'source-over';
+    } else {
+      applyToolStyle();
+      dctx.beginPath();
+      dctx.moveTo(drawX, drawY);
+      dctx.lineTo(pos.x, pos.y);
+      dctx.stroke();
+      dctx.globalCompositeOperation = 'source-over';
+      drawX = pos.x;
+      drawY = pos.y;
+    }
   });
 
-  canvas.addEventListener('mouseup', e => { e.stopPropagation(); drawing = false; });
-  canvas.addEventListener('mouseleave', () => { drawing = false; });
-  canvas.addEventListener('click', e => e.stopPropagation());
+  canvas.addEventListener('mouseup', e => {
+    e.stopPropagation();
+    if (drawing && shiftStart) {
+      const pos = getDrawPos(e);
+      dctx.putImageData(shiftSnap, 0, 0);
+      applyToolStyle();
+      dctx.beginPath();
+      dctx.moveTo(shiftStart.x, shiftStart.y);
+      dctx.lineTo(pos.x, pos.y);
+      dctx.stroke();
+      dctx.globalCompositeOperation = 'source-over';
+    }
+    drawing = false;
+    shiftStart = null;
+    shiftSnap = null;
+  });
+
+  canvas.addEventListener('mouseleave', () => {
+    drawing = false;
+    shiftStart = null;
+    shiftSnap = null;
+  });
+
+  canvas.addEventListener('click', e => {
+    e.stopPropagation();
+    if (drawTool !== 'text') return;
+    const pos = getDrawPos(e);
+    const gRect = document.getElementById('game').getBoundingClientRect();
+    textPos = pos;
+    textWrap.style.display = 'block';
+    textWrap.style.left = (e.clientX - gRect.left) + 'px';
+    textWrap.style.top  = (e.clientY - gRect.top)  + 'px';
+    textInput.style.color    = drawColor;
+    textInput.style.fontSize = (drawSize * 2 + 12) + 'px';
+    textInput.style.width    = '4px';
+    textInput.value = '';
+    textInput.focus();
+  });
+
+  // 텍스트 도구
+  const textWrap  = document.getElementById('draw-text-wrap');
+  const textInput = document.getElementById('draw-text-input');
+
+  function commitText() {
+    const text = textInput.value.trim();
+    if (text && textPos) {
+      saveDrawState();
+      dctx.globalCompositeOperation = 'source-over';
+      dctx.fillStyle = drawColor;
+      dctx.font = `${drawSize * 2 + 12}px 'Gowun Batang', serif`;
+      dctx.textBaseline = 'top';
+      dctx.fillText(text, textPos.x, textPos.y);
+    }
+    textInput.value = '';
+    textWrap.style.display = 'none';
+    textPos = null;
+  }
+
+  textInput.addEventListener('keydown', e => {
+    e.stopPropagation();
+    if (e.key === 'Enter') { e.preventDefault(); commitText(); }
+    if (e.key === 'Escape') { textInput.value = ''; textWrap.style.display = 'none'; textPos = null; }
+  });
+  textInput.addEventListener('input', () => {
+    textInput.style.width = Math.max(4, textInput.scrollWidth) + 'px';
+  });
+  textInput.addEventListener('blur', commitText);
+  textWrap.addEventListener('click', e => e.stopPropagation());
 
   const toolbar = document.getElementById('draw-toolbar');
   const toggleBtn = document.getElementById('draw-toggle');
@@ -257,17 +344,16 @@
 
   const toolBtns = document.querySelectorAll('.draw-tool-btn');
 
-  document.getElementById('tool-pen').addEventListener('click', () => {
-    drawTool = 'pen';
+  function setTool(tool) {
+    drawTool = tool;
+    canvas.style.cursor = tool === 'text' ? 'text' : 'crosshair';
     toolBtns.forEach(b => b.classList.remove('active'));
-    document.getElementById('tool-pen').classList.add('active');
-  });
+    document.getElementById('tool-' + tool).classList.add('active');
+  }
 
-  document.getElementById('tool-eraser').addEventListener('click', () => {
-    drawTool = 'eraser';
-    toolBtns.forEach(b => b.classList.remove('active'));
-    document.getElementById('tool-eraser').classList.add('active');
-  });
+  document.getElementById('tool-pen').addEventListener('click',    () => setTool('pen'));
+  document.getElementById('tool-eraser').addEventListener('click', () => setTool('eraser'));
+  document.getElementById('tool-text').addEventListener('click',   () => setTool('text'));
 
   document.getElementById('draw-undo').addEventListener('click', () => {
     if (undoStack.length) dctx.putImageData(undoStack.pop(), 0, 0);
