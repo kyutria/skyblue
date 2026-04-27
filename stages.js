@@ -3,7 +3,9 @@ const STAGES = {
     1: {
       story: "너는 하늘색이 좋다고 말했다. 자유롭게 날아가는 새와 솜사탕 같은 뭉게구름을 보듬어 안아주는 다정한 집 같아서 그렇다고 했다.",
       storyImage: "assets/images/story/1-1-story.png",
-      puzzleImage: "assets/images/puzzle/1-1-puzzle.png"
+      puzzleImage: "assets/images/puzzle/1-1-puzzle.png",
+      puzzleType: "interactive",
+      puzzleScript: "puzzle-1-1.js"
     },
     2: {
       story: "너의 작은 손에는 언제나 뭉툭해진 몽당연필과 낡은 크레파스가 꼭 쥐어져 있었다. 어린 시절부터 유독 그림 그리기를 좋아했던 너는, 시선이 머무는 빈 공간마다 너만의 세상을 채워 넣으려 했다. 그때의 너에게 세상은 끝없이 펼쳐진 거대한 스케치북과 다름없었다.",

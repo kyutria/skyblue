@@ -260,6 +260,60 @@ body[data-part="3"] { background: #0a0a1e; }
   pointer-events: none;
 }
 
+/* 1-1 퍼즐 */
+#puzzle-1-1-card {
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+  font-family: 'KyoboHandwriting', serif;
+  background: rgba(255, 252, 245, 0.96);
+  border: 1px solid rgba(0, 0, 0, 0.08);
+  border-radius: 12px;
+  padding: 44px 64px;
+  pointer-events: none;
+  box-shadow: 0 8px 32px rgba(0, 0, 0, 0.13);
+}
+
+.eq-line {
+  display: flex;
+  align-items: center;
+  gap: 16px;
+  font-size: 34px;
+  margin-bottom: 22px;
+}
+
+.eq-line:last-child {
+  margin-bottom: 0;
+}
+
+.eq-char {
+  color: #1a1a1a;
+  min-width: 36px;
+  text-align: center;
+}
+
+.eq-op {
+  color: #555;
+}
+
+.eq-eq {
+  color: #555;
+  margin: 0 2px;
+}
+
+.eq-num {
+  color: #1a1a1a;
+  min-width: 44px;
+}
+
+.eq-unknown {
+  color: #e63946;
+  font-size: 40px;
+  font-weight: bold;
+}
+
+/* 1-2 퍼즐 */
 #puzzle-1-2-text {
   position: absolute;
   top: 50%;
