@@ -133,6 +133,13 @@
     }
   }
 
+  const muteBtn = document.getElementById('bgm-mute');
+  muteBtn.addEventListener('click', e => {
+    e.stopPropagation();
+    bgm.muted = !bgm.muted;
+    muteBtn.classList.toggle('muted', bgm.muted);
+  });
+
   document.addEventListener('click', advance);
   document.addEventListener('keydown', e => {
     if (document.activeElement === document.getElementById('draw-text-input')) return;
@@ -156,10 +163,12 @@
   let shiftStart = null, shiftSnap = null;
   let textPos = null;
   const undoStack = [];
+  const redoStack = [];
 
   function saveDrawState() {
     if (undoStack.length >= 20) undoStack.shift();
     undoStack.push(dctx.getImageData(0, 0, canvas.width, canvas.height));
+    redoStack.length = 0;
   }
 
   function getDrawPos(e) {
@@ -365,7 +374,17 @@
   document.getElementById('tool-text').addEventListener('click',   () => setTool('text'));
 
   document.getElementById('draw-undo').addEventListener('click', () => {
-    if (undoStack.length) dctx.putImageData(undoStack.pop(), 0, 0);
+    if (undoStack.length) {
+      redoStack.push(dctx.getImageData(0, 0, canvas.width, canvas.height));
+      dctx.putImageData(undoStack.pop(), 0, 0);
+    }
+  });
+
+  document.getElementById('draw-redo').addEventListener('click', () => {
+    if (redoStack.length) {
+      undoStack.push(dctx.getImageData(0, 0, canvas.width, canvas.height));
+      dctx.putImageData(redoStack.pop(), 0, 0);
+    }
   });
 
   document.getElementById('draw-clear').addEventListener('click', () => {
