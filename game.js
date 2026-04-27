@@ -310,12 +310,14 @@
     toolbar.style.display = 'flex';
     toggleBtn.style.display = 'none';
     canvas.style.pointerEvents = 'auto';
+    canvas.style.opacity = '1';
   });
 
   document.getElementById('draw-close').addEventListener('click', () => {
     toolbar.style.display = 'none';
     toggleBtn.style.display = 'block';
     canvas.style.pointerEvents = 'none';
+    canvas.style.opacity = '0';
   });
 
   // 드래그
